@@ -15,40 +15,35 @@ namespace ObjectComparer.Model
             IEnumerable enum1 = (IEnumerable)obj1;
             IEnumerable enum2 = (IEnumerable)obj2;
 
-            Dictionary<object, int> dict1 = new Dictionary<object, int>();
-            Dictionary<object, int> dict2 = new Dictionary<object, int>();
-            foreach (object item in enum1)
+            var list1 = new List<object>();
+            var list2 = new List<object>();
+            foreach ( var obj in enum1)
             {
-                if (dict1.ContainsKey(item))
-                {
-                    dict1[item]++;
-                }
-                else
-                {
-                    dict1.Add(item, 1);
-                }
+                list1.Add(obj);
             }
-            foreach (object item in enum2)
-            {
-                if (dict2.ContainsKey(item))
-                {
-                    dict2[item]++;
-                }
-                else
-                {
-                    dict2.Add(item, 1);
-                }
+            foreach ( var obj in enum2)
+            { 
+                list2.Add(obj); 
             }
-
-            if (dict1.Count != dict2.Count)
+            if(list1.Count != list2.Count)
                 return false;
 
-            foreach (var key in dict1.Keys)
+            foreach( var listItem1 in list1)
             {
-                if (!dict2.ContainsKey(key) || dict1[key] != dict2[key])
+                bool isMatched = false;
+                foreach ( var listItem2 in list2)
                 {
-                    return false;
+                   var comparitorStrategy = ComparisonStrategyFactory.GetComparitorObject(listItem1, listItem2);
+                    var result = comparitorStrategy.Compare(listItem1, listItem2);
+                    if(result)
+                    {
+                        isMatched = true;
+                        list2.Remove(listItem2);
+                        break;
+                    }  
                 }
+                if(!isMatched)
+                    return false;
             }
             return true;
         }

@@ -18,7 +18,13 @@ namespace ObjectComparer.Model
             else if(obj1.GetType().IsValueType || obj1 is string)
                 return new ValueTypeComparisonStrategy();
             else if(obj1 is IEnumerable && obj2 is IEnumerable)
+            {
+                if(obj1 is IDictionary &&  obj2 is IDictionary)
+                {
+                    return new DictionaryTypeComparisonStrategy();
+                }
                 return new EnumerableTypeComparisonStrategy();
+            }  
             return new ReferenceTypeComparisonStrategy();
         }
     }
